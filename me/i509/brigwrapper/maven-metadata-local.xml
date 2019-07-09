@@ -3,10 +3,11 @@
   <groupId>me.i509</groupId>
   <artifactId>brigwrapper</artifactId>
   <versioning>
-    <release>0.9</release>
+    <release>0.9B</release>
     <versions>
       <version>0.9</version>
+      <version>0.9B</version>
     </versions>
-    <lastUpdated>20190709043848</lastUpdated>
+    <lastUpdated>20190709213855</lastUpdated>
   </versioning>
 </metadata>
