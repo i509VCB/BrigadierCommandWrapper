@@ -1,11 +1,11 @@
 package me.i509.brigwrapper.source;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.brigadier.context.CommandContext;
 
