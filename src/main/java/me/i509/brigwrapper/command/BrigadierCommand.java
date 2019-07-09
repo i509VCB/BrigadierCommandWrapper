@@ -37,7 +37,7 @@ public abstract class BrigadierCommand {
     }
     
     @SuppressWarnings("rawtypes")
-    public RequiredArgumentBuilder requiredArg(String s, ArgumentType<?> argument) {
+    public RequiredArgumentBuilder required(String s, ArgumentType<?> argument) {
         return RequiredArgumentBuilder.argument(s, argument);
     }
 

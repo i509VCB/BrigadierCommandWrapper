@@ -1,16 +1,20 @@
 package me.i509.brigwrapper;
 
-import java.util.HashMap;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.SimplePluginManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
@@ -20,9 +24,11 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import me.i509.brigwrapper.command.BrigadierCommand;
+import me.i509.brigwrapper.help.HelpHelper;
 import me.i509.brigwrapper.source.CommandSource;
 import me.i509.brigwrapper.util.CommandUtils;
 import me.i509.brigwrapper.util.Pair;
@@ -59,6 +65,8 @@ public final class BrigadierWrapper {
     Multimap<String, Pair<String, BrigadierCommand>> internalCommandMap;
     
     Map<String, CommandPermission> permissionMap;
+    
+    private static Map<ClassCache, Field> fields;
 
     protected BrigadierWrapper(Server server) throws ClassNotFoundException {
         if(Package.getPackage("com.mojang.brigadier") == null) {
@@ -66,8 +74,6 @@ public final class BrigadierWrapper {
         }
         
         internalCommandMap = HashMultimap.create();
-        
-        permissionMap = new HashMap<String, CommandPermission>();
         
         dispatcher = DispatcherInstance.getInstance().dispatcher(); //Create instance and store for local use
         
@@ -93,10 +99,6 @@ public final class BrigadierWrapper {
         
         INSTANCE.internalCommandMap.put(plugin.getName(), Pair.create(commandName, command));
         
-        INSTANCE.permissionMap.put(commandName, permission);
-        
-        //DispatcherInstance.getInstance().knownCommands();
-        
         LiteralCommandNode node = command.buildCommand();
         
         /*
@@ -106,14 +108,64 @@ public final class BrigadierWrapper {
                         .redirect(node));
         }*/
          // TODO Aliases
+        
+        
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(commandName)
                 .requires(csource -> CommandUtils.testSenderPerms(CommandSource.getSource(csource), permission))
                     .redirect(node));
+        
+        if(isServerLoaded()) {
+            Bukkit.getScheduler().runTaskLater(BrigadierWrapperPlugin.TEMP_INSTANCE, () -> HelpHelper.overrideTopic("/" + commandName, permission, command), 1L);
+        }
+    }
+    
+    /**
+     * Unregisters a command from the CommandDispatcher. This is not reccomended for use unless nessecary and has been deprecated for such reason
+     * @param commandName
+     * @param force
+     */
+    @Deprecated
+    public static void unregisterCommand(@NotNull String commandName, boolean force) {
+        try {
+            Field children = getField(CommandNode.class, "children");
+            
+            @SuppressWarnings("unchecked")
+            Map<String, CommandNode<?>> c = (Map<String, CommandNode<?>>) children.get(dispatcher.getRoot());
+            
+            if(force) {
+                List<String> keysToRemove = new ArrayList<>();
+                c.keySet().stream().filter(s -> s.contains(":")).filter(s -> s.split(":")[1].equalsIgnoreCase(commandName)).forEach(keysToRemove::add);
+                for(String key : keysToRemove) {
+                    c.remove(key);
+                }
+            }
+            c.remove(commandName);
+                        
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Uses reflection magic to unregister a command from bukkit's command map. This is not reccomended for use unless nessecary and has been deprecated for such reason
+     * @param commandName
+     */
+    @Deprecated
+    public static void unregisterBukkitCommand(@NotNull String commandName) {
+        try {
+            Field f = INSTANCE.commandMap.getClass().getField("knownCommands");
+            f.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, Command> knownCommands = (Map<String, Command>) f.get(INSTANCE.commandMap);
+            knownCommands.remove(commandName);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
     }
 
 
     /**
-     * Ends a command because of an error and returns the following message as the reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
+     * Ends a command and returns the following message from the supplier as the failure reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
      * @param message The failure reason.
      */
     public static void fail(String message) throws CommandSyntaxException {
@@ -121,7 +173,7 @@ public final class BrigadierWrapper {
     }
     
     /**
-     * Ends a command because of an error and returns the following message from the supplier as the reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
+     * Ends a command and returns the following message from the supplier as the failure reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
      * @param supplier the supplier ran to get the failure reason of the command. Such as in the case of a language system or undoing actions before ending a command. 
      * 
      */
@@ -161,5 +213,22 @@ public final class BrigadierWrapper {
     @Deprecated
     public static void setLoaded() {
         isLoaded = true;
+    }
+    
+    public static Field getField(Class<?> clazz, String name) {
+        ClassCache key = new ClassCache(clazz, name);
+        if(fields.containsKey(key)) {
+            return fields.get(key);
+        } else {
+            Field result = null;
+            try {
+                result = clazz.getDeclaredField(name);
+            } catch (NoSuchFieldException | SecurityException e) {
+                e.printStackTrace();
+            }
+            result.setAccessible(true);
+            fields.put(key, result);
+            return result;
+        }
     }
 }

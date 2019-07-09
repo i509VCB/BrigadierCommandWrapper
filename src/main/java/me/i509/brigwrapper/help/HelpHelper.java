@@ -16,15 +16,10 @@ public class HelpHelper {
      * @param command The instance of the command
      * @return true if successful, otherwise false.
      */
-    public static void overrideTopic(String commandName, CommandPermission perm, BrigadierCommand right) {
-        //if(helpTopics !=null) {
-        //    helpTopics.put("/"+commandName, new CustomCommandHelpTopic(commandName, perm, right));
-        //    return true;
-        //}
-        
+    public static void overrideTopic(String commandName, CommandPermission perm, BrigadierCommand cmd) {
         BrigadierWrapper.getAllCommands();
         
-        Pair<String,String> builtTopic = buildTopicAmended(commandName, perm, right);
+        Pair<String,String> builtTopic = buildTopicAmended(commandName, perm, cmd);
         
         if(perm.isString()) {
             Bukkit.getHelpMap().getHelpTopic("/" + commandName).amendCanSee(perm.asString());
