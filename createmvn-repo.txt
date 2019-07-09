@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=me.i509 -DartifactId=brigwrapper -Dversion=0.9 -Dfile=BrigadierCommandWrapper.jar -Dpackaging=jar -DgeneratePom=true -DlocalRepositoryPath=.  -DcreateChecksum=true
