@@ -21,6 +21,7 @@ dependencies {
 	compile 'org.jetbrains:annotations:16.0.2'
 	compileOnly "org.spigotmc:spigot-api:1.14.3-R0.1-SNAPSHOT"
 	compileOnly files('server/spigot-1.14.3.jar')
+	compileOnly files('server/spigot-1.13.2.jar')
 }
 
 tasks.withType(Jar) {

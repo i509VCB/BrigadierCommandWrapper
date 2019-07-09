@@ -27,7 +27,7 @@ import me.i509.brigwrapper.source.CommandSource;
 import me.i509.brigwrapper.util.CommandUtils;
 import me.i509.brigwrapper.util.Pair;
 
-public class BrigadierWrapper {
+public final class BrigadierWrapper {
     
     public static final String DEFAULT_DESCRIPTION = "This command does not have a defined description";
 
@@ -39,6 +39,10 @@ public class BrigadierWrapper {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        
+        if(Bukkit.getWorlds().isEmpty()) {
+            isLoaded = false;
+        }
     }
 
     static BrigadierWrapper INSTANCE;
@@ -47,6 +51,8 @@ public class BrigadierWrapper {
     
     @SuppressWarnings("rawtypes")
     private static CommandDispatcher dispatcher;
+
+    private static boolean isLoaded;
     
     private SimpleCommandMap commandMap;
 
@@ -78,17 +84,14 @@ public class BrigadierWrapper {
      * @param command the command to execute
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static void registerCommand(@NotNull String commandName, @Nullable Plugin plugin, @NotNull CommandPermission permission, @NotNull BrigadierCommand command) {
+    public static void registerCommand(@NotNull String commandName, @NotNull Plugin plugin, @NotNull CommandPermission permission, @NotNull BrigadierCommand command) {
         
         Validate.notNull(commandName, "Cannot register null command name");
         Validate.notNull(permission, "Cannot register null command permission. Use CommandPermission#ofEmpty instead");
         Validate.notNull(command, "Cannot register null command");
+        Validate.notNull(plugin, "Must register command with a plugin");
         
-        if(plugin==null) {
-            INSTANCE.internalCommandMap.put("null", Pair.create(commandName, command));
-        } else {
-            INSTANCE.internalCommandMap.put(plugin.getName(), Pair.create(commandName, command));
-        }
+        INSTANCE.internalCommandMap.put(plugin.getName(), Pair.create(commandName, command));
         
         INSTANCE.permissionMap.put(commandName, permission);
         
@@ -146,5 +149,17 @@ public class BrigadierWrapper {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    public static boolean isServerLoaded() {
+        return isLoaded;
+    }
+    
+    /**
+     * This should not be used by plugins. This operation cannot be undone without restarting the server.
+     */
+    @Deprecated
+    public static void setLoaded() {
+        isLoaded = true;
     }
 }

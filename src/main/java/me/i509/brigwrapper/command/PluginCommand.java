@@ -1,7 +1,9 @@
 package me.i509.brigwrapper.command;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -56,26 +58,26 @@ public class PluginCommand extends BrigadierCommand {
         
         Plugin plugin = Bukkit.getPluginManager().getPlugin((String) ctx.getArgument("plugin", String.class)); // TODO add code to handle the Dynamic String arg
         
-        
-        
-        // Bukkit.getHelpMap().getHelpTopics().stream().map(topic -> topic.getName()).forEach(name -> System.out.println(name)); TODO remove debug code
-        
         if(plugin==null) {
             BrigadierWrapper.fail(() -> {
                 return "Plugin " + plugin + " not found";
             });
         }
         // TODO fix mess
-        Optional pluginList = Optional.empty();
+        List<BrigadierCommand> commandsRegistered = BrigadierWrapper.getAllCommands().get(plugin.getName()).asList().stream().filter(predicate -> {
+            if(predicate.getLeft().equals(plugin.getName())) {
+                return true;
+            }
+            return false;
+        }).map(pair -> pair.getRight()).collect(Collectors.toList());
                 
         
-        if(!pluginList.isPresent()) {
-            
+        if(commandsRegistered.isEmpty()) {
+            // TODO none registered
             return 1;
         }
         
-        //Collection<String> values = pluginList.get().getValue();
-        // TODO message success here
+        
         
         return 0;
     }

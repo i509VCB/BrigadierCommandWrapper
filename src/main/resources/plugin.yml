@@ -3,4 +3,5 @@ version: 1.0
 author: i509VCB
 api-version: 1.13
 main: me.i509.brigwrapper.BrigadierWrapperPlugin
+load: STARTUP
 description: "Allows use of brigadier to create commands in bukkit, along with a few useful tools for making creation version independent and support to provide dynamic client side tab completion with a mod"

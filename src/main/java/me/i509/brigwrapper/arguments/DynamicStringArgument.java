@@ -34,6 +34,19 @@ public class DynamicStringArgument {
         return suggestions;
     }
     
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public RequiredArgumentBuilder build(String argumentName) {
+        return RequiredArgumentBuilder.argument(argumentName, StringArgumentType.word())
+                .suggests((SuggestionProvider<Object>) this.suggestions());
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public RequiredArgumentBuilder buildWithPermission(String argumentName, CommandPermission perm) {
+        return RequiredArgumentBuilder.argument(argumentName, StringArgumentType.word())
+                .suggests((SuggestionProvider<Object>) this.suggestions())
+                    .requires(csource -> CommandUtils.testSenderPerms(CommandSource.getSource(csource), perm));
+    }
+
     public SuggestionProvider<?> suggestions() {
         SuggestionProvider<?> provider;
         
@@ -44,19 +57,6 @@ public class DynamicStringArgument {
         return provider;
     }
     
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public RequiredArgumentBuilder build(String argumentName) {
-        return RequiredArgumentBuilder.argument(argumentName, StringArgumentType.word())
-                .suggests((SuggestionProvider<Object>) this.suggestions());
-    }
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public RequiredArgumentBuilder buildWithPermission(String argumentName, CommandPermission perm) {
-        return RequiredArgumentBuilder.argument(argumentName, StringArgumentType.word())
-                .suggests((SuggestionProvider<Object>) this.suggestions())
-                    .requires(csource -> CommandUtils.testSenderPerms(CommandSource.getSource(csource), perm));
-    }
-
     private CompletableFuture<Suggestions> getSuggestionsBuilder(SuggestionsBuilder builder, String[] array) {
         String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
         for (int i = 0; i < array.length; i++) {
