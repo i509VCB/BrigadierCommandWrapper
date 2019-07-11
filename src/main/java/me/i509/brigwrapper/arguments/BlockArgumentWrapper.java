@@ -7,41 +7,32 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import me.i509.brigwrapper.impl.v1_14_R1.arg.BlockArgumentWrapper_1_14_R1;
-import me.i509.brigwrapper.impl.v1_14_R1.arg.decoder.BlockArgumentDecoder_1_14_R1;
 
 public abstract class BlockArgumentWrapper implements IArgumentWrapper {
+    
+    static {
+        // TODO version stuff
+        INSTANCE = new BlockArgumentWrapper_1_14_R1();
+    }
+    
+    private static final BlockArgumentWrapper INSTANCE;
 
     @Override
     public abstract ArgumentType<?> getNMSType();
-    
-    public static abstract class BlockArgumentDecoder {
-        
-        private static BlockArgumentDecoder INSTANCE;
-        
-        private static BlockArgumentDecoder createInstance() {
-            // TODO verion stuff
-            return new BlockArgumentDecoder_1_14_R1();
-        }
-        
-        public static Material getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException {
-            if(INSTANCE==null) {
-                INSTANCE = createInstance();
-            }
-            
-            return INSTANCE._getType(cmdCtx, str);
-        }
-        
-        /* 
-         * ==========================
-         *      Abstract methods
-         * ==========================
-         */
-        
-        protected abstract Material _getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
+
+    public static ArgumentType<?> block() {
+        return INSTANCE.getNMSType();
     }
 
-    public static BlockArgumentWrapper block() {
-        // TODO Auto-generated method stub
-        return new BlockArgumentWrapper_1_14_R1();
+    public static Material getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException {
+        return INSTANCE._getType(cmdCtx, str);
     }
+    
+    /* 
+     * ==========================
+     *      Abstract methods
+     * ==========================
+     */
+
+    protected abstract Material _getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
 }

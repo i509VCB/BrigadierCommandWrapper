@@ -17,23 +17,24 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
 
         BrigadierWrapper.registerCommand("bwrapper", this, CommandPermission.of("bwrapper.general"), PluginCommand.getCmd());
 
-        getServer().getScheduler().scheduleSyncDelayedTask(this, () -> {
+        getServer().getScheduler().scheduleSyncDelayedTask(this, () -> { // TODO This can error out, needs to be fixed due to NPEs
             BrigadierWrapper.INSTANCE.internalCommandMap.forEach((plugin, commandPair) -> 
                HelpHelper.overrideTopic(commandPair.getLeft(), BrigadierWrapper.INSTANCE.permissionMap.get(commandPair.getLeft()), commandPair.getRight()));
             },1L);
    }
    
     /**
-     * Register the plugin channels for future feature. Reccomended to just ignore these
+     * Register the plugin channels for future feature. Reccomended to just ignore these for now.
      */
     private void registerChannels() {
-       getServer().getMessenger().registerOutgoingPluginChannel(this, "BGW_S2C_MSG");
+       getServer().getMessenger().registerOutgoingPluginChannel(this, "bgw:s2c_msg");
 
-       getServer().getMessenger().registerIncomingPluginChannel(this, "BGW_C2S_CMDL", (channel, player, message) -> {
+       getServer().getMessenger().registerIncomingPluginChannel(this, "bgw:s2c_cmdl", (channel, player, message) -> {
 
-           if(channel.equals("BGW_C2S_CMDL")) {
+           if(channel.equals("bgw:c2s_cmdl")) {
                return;
            }
+           
            /*
            String commandLine = new String(Base64.getDecoder().decode(message));
            

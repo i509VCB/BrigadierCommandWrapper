@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import me.i509.brigwrapper.source.CommandSource;
 import net.minecraft.server.v1_14_R1.CommandListenerWrapper;
+import net.minecraft.server.v1_14_R1.WorldGenerator;
 
 public class CommandSource_1_14_R1 implements CommandSource {
     
@@ -19,8 +20,8 @@ public class CommandSource_1_14_R1 implements CommandSource {
         if (source instanceof CommandListenerWrapper) {
             return new CommandSource_1_14_R1((CommandListenerWrapper) source);
         }
-        
-        throw new IllegalArgumentException("Tried to get the CommandSource from server but the source object is not an instance of CommandListenerWrapper");
+
+        throw new IllegalArgumentException("Tried to get the CommandSource from server but the source object is not an instance of net.minecraft.server.v1_14_R1.CommandListenerWrapper. Are you using the latest version?");
     }
 
     @Override
