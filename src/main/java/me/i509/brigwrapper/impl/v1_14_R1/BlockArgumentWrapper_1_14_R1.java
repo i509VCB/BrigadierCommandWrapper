@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.impl.v1_14_R1.arg;
+package me.i509.brigwrapper.impl.v1_14_R1;
 
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;

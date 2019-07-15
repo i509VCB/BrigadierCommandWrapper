@@ -10,7 +10,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import me.i509.brigwrapper.impl.v1_14_R1.arg.EntitySelectorWrapper_1_14_R1;
+import me.i509.brigwrapper.impl.v1_14_R1.EntitySelectorWrapper_1_14_R1;
 import me.i509.brigwrapper.selectors.EntitySelectorType;
 
 // TODO version dependant selectors
@@ -22,8 +22,9 @@ public abstract class EntitySelectorWrapper {
         INSTANCE = new EntitySelectorWrapper_1_14_R1();
     }
     
-    public ArgumentType<?> getNMSType(@NotNull EntitySelectorType type) {
-        return INSTANCE.getNMSType(type);
+    
+    public static ArgumentType<?> selector(@NotNull EntitySelectorType type) {
+        return INSTANCE._getNMSType(type);
     }
     
     /**
@@ -75,6 +76,8 @@ public abstract class EntitySelectorWrapper {
      *      Abstract methods
      * ==========================
      */
+    
+    protected abstract ArgumentType<?> _getNMSType(EntitySelectorType type);
     
     protected abstract List<Entity> _getEntities(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
 

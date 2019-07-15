@@ -163,7 +163,7 @@ public final class BrigadierWrapper {
 
 
     /**
-     * Ends a command and returns the following message from the supplier as the failure reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
+     * Ends a command and returns the following message as the failure reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
      * @param message The failure reason.
      */
     public static void fail(String message) throws CommandSyntaxException {
@@ -180,7 +180,7 @@ public final class BrigadierWrapper {
     }
     
     /**
-     * Gets an {@linkplain ImmutableMultimap} with all commands registered by plugins. Any commands registered with a null plugin will be underneath the a key with the string "null"
+     * Gets an {@link ImmutableMultimap} with all commands registered by plugins.
      * @return
      */
     public static ImmutableMultimap<String, Pair<String,BrigadierCommand>> getAllCommands() {

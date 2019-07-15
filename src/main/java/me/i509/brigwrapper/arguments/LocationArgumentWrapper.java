@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import me.i509.brigwrapper.impl.v1_14_R1.arg.LocationArgumentWrapper_1_14_R1;
+import me.i509.brigwrapper.impl.v1_14_R1.LocationArgumentWrapper_1_14_R1;
 import me.i509.brigwrapper.selectors.LocationType;
 
 public abstract class LocationArgumentWrapper {

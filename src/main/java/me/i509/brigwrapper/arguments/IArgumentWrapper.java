@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 
 /**
  * Represents an argument wrapper for NMS based arguments
- * @author Vince
+ * @author i509VCB
  *
  */
 public interface IArgumentWrapper {

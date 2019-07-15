@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.impl.v1_14_R1.arg;
+package me.i509.brigwrapper.impl.v1_14_R1;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +21,7 @@ public class EntitySelectorWrapper_1_14_R1 extends EntitySelectorWrapper {
      * c = true true -> only one PLAYER is allowed
      * d = false true -> multiple players
      */ 
-    public ArgumentType<?> getNMSType(EntitySelectorType selectorType) {
+    protected ArgumentType<?> _getNMSType(EntitySelectorType selectorType) {
         switch(selectorType) {
         case MANY_ENTITIES:
             return ArgumentEntity.multipleEntities(); // b

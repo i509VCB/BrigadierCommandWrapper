@@ -2,6 +2,8 @@ package me.i509.brigwrapper;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.i509.brigwrapper.CommandPermission.PermissionType;
+import me.i509.brigwrapper.command.DynamicErrorTest;
 import me.i509.brigwrapper.command.PluginCommand;
 import me.i509.brigwrapper.help.HelpHelper;
 
@@ -16,6 +18,8 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
         registerChannels();
 
         BrigadierWrapper.registerCommand("bwrapper", this, CommandPermission.of("bwrapper.general"), PluginCommand.getCmd());
+        
+        BrigadierWrapper.registerCommand("packet_test", this, CommandPermission.of(PermissionType.OP), new DynamicErrorTest());
 
         getServer().getScheduler().scheduleSyncDelayedTask(this, () -> { // TODO This can error out, needs to be fixed due to NPEs
             BrigadierWrapper.INSTANCE.internalCommandMap.forEach((plugin, commandPair) -> 
@@ -30,7 +34,9 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
        getServer().getMessenger().registerOutgoingPluginChannel(this, "bgw:s2c_msg");
 
        getServer().getMessenger().registerIncomingPluginChannel(this, "bgw:s2c_cmdl", (channel, player, message) -> {
-
+           
+           System.out.println("Received packet");
+           
            if(channel.equals("bgw:c2s_cmdl")) {
                return;
            }

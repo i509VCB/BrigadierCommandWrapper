@@ -1,10 +1,16 @@
 package me.i509.brigwrapper.dynamic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
 
 import me.i509.brigwrapper.BrigadierWrapperPlugin;
 
@@ -30,10 +36,25 @@ public class DynamicErrorProvider {
         serializeAndSend(player, message);
     }
     
-    private static void serializeAndSend(Player player, String msg) {
+    private static void serializeAndSend(Player player, String... msg) {
         // TODO serializer logic?
         
-        player.sendPluginMessage(BrigadierWrapperPlugin.TEMP_INSTANCE, "BGW_S2C_MSG", msg.getBytes());
+        List<String> list = new ArrayList<String>();
+        
+        if(msg.length>0) {
+            for(String ms : msg) {
+                list.add(ms);
+            }
+        }
+        
+        Gson gson = new Gson();
+        
+        //gson.toJson(list);
+        
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.write(gson.toJson(list).getBytes());
+        
+        player.sendPluginMessage(BrigadierWrapperPlugin.TEMP_INSTANCE, "bgw:s2c_msg", out.toByteArray());
     }
     
 }
