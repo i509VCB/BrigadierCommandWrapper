@@ -1,11 +1,17 @@
 package me.i509.brigwrapper;
 
+import java.nio.charset.Charset;
+
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.gson.Gson;
+import com.mojang.brigadier.StringReader;
 
 import me.i509.brigwrapper.CommandPermission.PermissionType;
 import me.i509.brigwrapper.command.DynamicErrorTest;
 import me.i509.brigwrapper.command.PluginCommand;
 import me.i509.brigwrapper.help.HelpHelper;
+import me.i509.util.SerializablePair;
 
 public class BrigadierWrapperPlugin extends JavaPlugin {
     
@@ -33,13 +39,35 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
     private void registerChannels() {
        getServer().getMessenger().registerOutgoingPluginChannel(this, "bgw:s2c_msg");
 
-       getServer().getMessenger().registerIncomingPluginChannel(this, "bgw:s2c_cmdl", (channel, player, message) -> {
+       getServer().getMessenger().registerIncomingPluginChannel(this, "bgw:c2s_cmdl", (channel, player, message) -> {
            
            System.out.println("Received packet");
            
-           if(channel.equals("bgw:c2s_cmdl")) {
+           if(!channel.equals("bgw:c2s_cmdl")) {
                return;
            }
+           
+           String msg = new String(message, Charset.forName("UTF-8"));
+           
+           //String actual = msg.substring(channel.length()+1); // Cut out identifier
+           
+           System.out.println(msg);
+           //System.out.println(actual);
+           
+           //Gson gson = new Gson();
+           
+           Gson gson = new Gson();
+           
+           @SuppressWarnings("unchecked")
+           SerializablePair<String, Number> serialstringreader = gson.fromJson(msg, SerializablePair.class);
+           
+           StringReader stringreader = new StringReader(serialstringreader.getLeft());
+           stringreader.setCursor((int) serialstringreader.getRight().intValue());
+           
+           
+           System.out.println(stringreader.canRead());
+           
+           System.out.println(stringreader.getString());
            
            /*
            String commandLine = new String(Base64.getDecoder().decode(message));
