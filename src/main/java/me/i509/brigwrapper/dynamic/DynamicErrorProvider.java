@@ -1,24 +1,55 @@
 package me.i509.brigwrapper.dynamic;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
+import com.mojang.brigadier.StringReader;
 
 import me.i509.brigwrapper.BrigadierWrapperPlugin;
+import me.i509.util.SerializablePair;
 
 /**
  * Future feature, not implemented yet.
  *
  */
 public class DynamicErrorProvider {
+    
+    /**
+     * The {@link PluginMessageListener} fired when the client sends a StringReader to the server to parse for custom errors.
+     */
+    public static final PluginMessageListener LISTENER = (channel, player, message) -> {
+        System.out.println("Received packet");
+        
+        if(!channel.equals("bgw:c2s_cmdl")) {
+            return;
+        }
+        
+        String msg = new String(message, Charset.forName("UTF-8"));
+        
+        Gson gson = new Gson();
+        
+        @SuppressWarnings("unchecked")
+        SerializablePair<String, Number> serialstringreader = gson.fromJson(msg, SerializablePair.class);
+        
+        StringReader stringreader = new StringReader(serialstringreader.getLeft());
+        stringreader.setCursor((int) serialstringreader.getRight().intValue());
+        
+        
+        System.out.println(stringreader.canRead());
+        
+        System.out.println(stringreader.getString());
+
+    };
     
     /**
      * Sends a dynamic command message to a player. This will send to any player but only do something if the player has the dynamic command messages mod installed.
@@ -37,8 +68,6 @@ public class DynamicErrorProvider {
     }
     
     private static void serializeAndSend(Player player, String... msg) {
-        // TODO serializer logic?
-        
         List<String> list = new ArrayList<String>();
         
         if(msg.length>0) {
@@ -48,9 +77,7 @@ public class DynamicErrorProvider {
         }
         
         Gson gson = new Gson();
-        
-        //gson.toJson(list);
-        
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.write(gson.toJson(list).getBytes());
         

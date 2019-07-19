@@ -22,7 +22,11 @@ public abstract class EntitySelectorWrapper {
         INSTANCE = new EntitySelectorWrapper_1_14_R1();
     }
     
-    
+    /**
+     * Creates an entity selector argument of the following type.
+     * @param type The EntitySelector type.
+     * @return The EntitySelectorArgument.
+     */
     public static ArgumentType<?> selector(@NotNull EntitySelectorType type) {
         return INSTANCE._getNMSType(type);
     }

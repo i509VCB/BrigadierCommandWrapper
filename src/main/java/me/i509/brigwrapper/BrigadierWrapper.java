@@ -31,6 +31,26 @@ import me.i509.brigwrapper.source.CommandSource;
 import me.i509.brigwrapper.util.CommandUtils;
 import me.i509.brigwrapper.util.Pair;
 
+/**
+ * TODO
+ * Implement MultiWorld plugin checks
+ * ChatComponentArgumentWrapper (ChatComponents)
+ * LootTableArgumentWrapper (Loot tables, return the LootTable enum or NamespacedKey)
+ * Wrapper for ASK_SERVER suggestion provider.
+ * Amend help topic menu getters in BrigadierCommand
+ * GameProfileWrapper (Mojang GameProfiles, such as UUID or username)
+ * 
+ * Optionally add checking of sender into requires instead of at command runtime.
+ * 
+ * Create DynamicLiteralArgument which only works if within dynamic string array, along with error support.
+ * 
+ * Possible:
+ * MathOperationWrapper (if possible)
+ * 
+ * 
+ * @author i509VCB
+ *
+ */
 public final class BrigadierWrapper {
     
     public static final String DEFAULT_DESCRIPTION = "This command does not have a defined description";
@@ -47,6 +67,8 @@ public final class BrigadierWrapper {
         if(Bukkit.getWorlds().isEmpty()) {
             isLoaded = false;
         }
+        
+        fallbackDimension = BrigadierWrapperPlugin.isMultiWorld();
     }
 
     static BrigadierWrapper INSTANCE;
@@ -63,6 +85,8 @@ public final class BrigadierWrapper {
     Multimap<String, Pair<String, BrigadierCommand>> internalCommandMap;
     
     Map<String, CommandPermission> permissionMap;
+
+    private static final boolean fallbackDimension;
     
     private static Map<ClassCache, Field> fields;
 
@@ -228,5 +252,9 @@ public final class BrigadierWrapper {
             fields.put(key, result);
             return result;
         }
+    }
+    
+    public static boolean useFallbackDimensionArgument() {
+        return fallbackDimension;
     }
 }

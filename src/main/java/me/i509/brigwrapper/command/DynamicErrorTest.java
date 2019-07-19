@@ -16,14 +16,12 @@ import me.i509.brigwrapper.arguments.EntitySelectorWrapper;
 import me.i509.brigwrapper.dynamic.DynamicErrorProvider;
 import me.i509.brigwrapper.selectors.EntitySelectorType;
 import me.i509.brigwrapper.source.CommandSource;
-import me.i509.brigwrapper.util.CommandUtils;
 
 public class DynamicErrorTest extends BrigadierCommand {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public LiteralCommandNode buildCommand() {
-        // TODO Auto-generated method stub
         return DispatcherInstance.getInstance().dispatcher().register((LiteralArgumentBuilder) literal("packet_test")
                 .then(required("player", EntitySelectorWrapper.selector(EntitySelectorType.ONE_PLAYER))
                         .executes(ctx -> {
@@ -35,7 +33,7 @@ public class DynamicErrorTest extends BrigadierCommand {
         CommandSource source = CommandSource.getSource(ctx);
         
         if(!(source.getSender() instanceof ConsoleCommandSender)) {
-            throw new SimpleCommandExceptionType(new LiteralMessage("Must be console to use this command")).create();
+            throw new SimpleCommandExceptionType(new LiteralMessage("Must be console to use this command")).create(); // TODO replace with fail call or add #ifNotConsoleFail(CommandSender)
         }
         
         DynamicErrorProvider.sendDynamicMessage(EntitySelectorWrapper.getPlayer(ctx, "player"), "Test exception");

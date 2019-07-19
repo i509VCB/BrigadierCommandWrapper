@@ -16,15 +16,23 @@ public abstract class ItemArgumentWrapper implements IArgumentWrapper {
         INSTANCE = new ItemArgumentWrapper_1_14_R1();
     }
     
+    /**
+     * Creates an Item argument
+     * @return a new Item argument.
+     */
     public static ArgumentType<?> item() {
         return INSTANCE.getNMSType();
     }
     
-    @Override
-    public abstract ArgumentType<?> getNMSType();
-    
-    public static Material getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException {
-        return INSTANCE._getType(cmdCtx, str);
+    /**
+     * Gets the type of item
+     * @param ctx The {@link CommandContext}
+     * @param str The name of the argument from {@link RequiredArgumentBuilder}
+     * @return The Material of the item in the argument
+     * @throws CommandSyntaxException
+     */
+    public static Material getType(CommandContext<?> ctx, String str) throws CommandSyntaxException {
+        return INSTANCE._getType(ctx, str);
     }
     
     /* 
@@ -32,6 +40,9 @@ public abstract class ItemArgumentWrapper implements IArgumentWrapper {
      *      Abstract methods
      * ==========================
      */
+    
+    @Override
+    public abstract ArgumentType<?> getNMSType();
     
     protected abstract Material _getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
 }

@@ -1,7 +1,16 @@
 name: BrigadierWrapper
-version: 0.9.2A
+version: 0.9.3A
 author: i509VCB
+# Already an obvious as brigadier is needed
 api-version: 1.13
 main: me.i509.brigwrapper.BrigadierWrapperPlugin
+# Why soft-depend on Multiworld plugins? 
+# This is so we can select the right WorldArgumentWrapper for the server. 
+# This can be overriden by config if wanted. 
+# Please PR extra plugins into the list if you know of any other plugins that handle multiple worlds.
+#
+# NBTAPI is required for one of the methods of getting the NBT tag from NBTTagArgumentWrapper and will throw an exception if not present.
+softdepend: [Multiworld, Multiverse, NBTAPI]
+# Startup is needed to get in early for command registration.
 load: STARTUP
-description: "Allows use of brigadier to create commands in bukkit, along with a few useful tools for making creation version independent and support to provide dynamic client side tab completion with a mod"
+description: "Allows use of brigadier to create commands in bukkit, along with a few useful tools for making it all version independent and support to provide dynamic client side tab completion with a mod"

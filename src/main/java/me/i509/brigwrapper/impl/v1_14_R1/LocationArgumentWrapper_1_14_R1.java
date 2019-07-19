@@ -22,7 +22,7 @@ import net.minecraft.server.v1_14_R1.Vec3D;
 public class LocationArgumentWrapper_1_14_R1 extends LocationArgumentWrapper {
 
     @Override
-    public ArgumentType<?> getNMSType(LocationType type) {
+    public ArgumentType<?> _getNMSType(LocationType type) {
         switch(type) {
         case BLOCK:
             return ArgumentPosition.a();
@@ -63,7 +63,7 @@ public class LocationArgumentWrapper_1_14_R1 extends LocationArgumentWrapper {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    protected Location getFromContext(CommandContext cmdCtx, String str, LocationType type) throws CommandSyntaxException {
+    protected Location _getFromContext(CommandContext cmdCtx, String str, LocationType type) throws CommandSyntaxException {
         
         Object loc = cmdCtx.getArgument(str, getClazzFromType(type));
         
