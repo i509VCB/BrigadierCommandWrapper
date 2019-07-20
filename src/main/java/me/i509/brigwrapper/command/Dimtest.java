@@ -2,20 +2,20 @@ package me.i509.brigwrapper.command;
 
 import java.util.Optional;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import me.i509.brigwrapper.DispatcherInstance;
 import me.i509.brigwrapper.arguments.WorldArgumentWrapper;
 
 public class Dimtest extends BrigadierCommand {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public LiteralCommandNode buildCommand() {
-        return DispatcherInstance.getInstance().dispatcher().register((LiteralArgumentBuilder) literal("dimens")
+    public LiteralCommandNode register(CommandDispatcher dispatcher) {
+        return dispatcher.register((LiteralArgumentBuilder) literal("dimens")
                 .then(WorldArgumentWrapper.world("dim")
                         .executes(ctx -> {
                             return execute(ctx);
@@ -28,7 +28,7 @@ public class Dimtest extends BrigadierCommand {
     }
 
     @Override
-    public Optional<String> description() {
+    public Optional<String> fullDescription() {
         // TODO Auto-generated method stub
         return Optional.empty();
     }
@@ -43,6 +43,11 @@ public class Dimtest extends BrigadierCommand {
     public Optional<String> usage() {
         // TODO Auto-generated method stub
         return Optional.empty();
+    }
+
+    @Override
+    public boolean silentPerms() {
+        return false;
     }
 
 }

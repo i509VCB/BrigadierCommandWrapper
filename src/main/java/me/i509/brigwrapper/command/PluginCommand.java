@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -32,8 +33,8 @@ public class PluginCommand extends BrigadierCommand {
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public LiteralCommandNode buildCommand() {
-        return DispatcherInstance.getInstance().dispatcher().register((LiteralArgumentBuilder) literal("bwrapper")
+    public LiteralCommandNode register(CommandDispatcher dispatcher) {
+        return dispatcher.register((LiteralArgumentBuilder) literal("bwrapper")
                 .then(literal("version") 
                         .executes(ctx -> { 
                             return executeVersion(ctx); 
@@ -56,11 +57,13 @@ public class PluginCommand extends BrigadierCommand {
         
         CommandSource source = CommandSource.getSource(ctx);
         
-        Plugin plugin = Bukkit.getPluginManager().getPlugin((String) ctx.getArgument("plugin", String.class)); // TODO add code to handle the Dynamic String arg
+        String pluginName = (String) ctx.getArgument("plugin", String.class);
+        
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName); // TODO add code to handle the Dynamic String arg
         
         if(plugin==null) {
             BrigadierWrapper.fail(() -> {
-                return "Plugin " + plugin + " not found";
+                return "Plugin " + pluginName + " not found";
             });
         }
         // TODO fix mess
@@ -100,7 +103,7 @@ public class PluginCommand extends BrigadierCommand {
     }
     
     @Override
-    public Optional<String> description() {
+    public Optional<String> fullDescription() {
         return Optional.of("Gets a list of all commands brigadier wrapper has registered per plugin.");
     }
 
@@ -112,5 +115,10 @@ public class PluginCommand extends BrigadierCommand {
     @Override
     public Optional<String> usage() {
         return Optional.of("/bwrapper getRegistered <plugin> [command]\n/bwrapper version\n/bwrapper");
+    }
+
+    @Override
+    public boolean silentPerms() {
+        return false;
     }
 }

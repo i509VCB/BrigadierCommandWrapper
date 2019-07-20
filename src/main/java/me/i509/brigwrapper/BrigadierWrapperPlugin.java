@@ -1,23 +1,28 @@
 package me.i509.brigwrapper;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.i509.brigwrapper.CommandPermission.PermissionType;
+import me.i509.brigwrapper.command.BrigadierWrappedCommand;
 import me.i509.brigwrapper.command.Dimtest;
 import me.i509.brigwrapper.command.DynamicErrorTest;
 import me.i509.brigwrapper.command.PluginCommand;
-import me.i509.brigwrapper.dynamic.DynamicErrorProvider;
-import me.i509.brigwrapper.help.HelpHelper;
+import me.i509.brigwrapper.help.BrigadierHelpTopic;
 
 public class BrigadierWrapperPlugin extends JavaPlugin {
     
-    public static BrigadierWrapperPlugin TEMP_INSTANCE;
+    static BrigadierWrapperPlugin PACKAGE_INSTANCE;
     
     public void onEnable() {
         
-        TEMP_INSTANCE = this;
+        PACKAGE_INSTANCE = this;
         
         registerChannels();
+        
+        Bukkit.getHelpMap().registerHelpTopicFactory(BrigadierWrappedCommand.class, command -> {
+            return new BrigadierHelpTopic((BrigadierWrappedCommand) command);
+        });
 
         BrigadierWrapper.registerCommand("bwrapper", this, CommandPermission.of("bwrapper.general"), PluginCommand.getCmd());
         
@@ -29,9 +34,19 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
         
         getServer().getScheduler().scheduleSyncDelayedTask(this, () -> { // TODO This can error out, needs to be fixed due to NPEs
             
+            try {
+                DispatcherInstance.getInstance().syncCommands();
+            } catch (ReflectiveOperationException e) {
+                getLogger().severe("Failed to sync commands after server startup");
+                e.printStackTrace();
+            }
+            
+            /**
             BrigadierWrapper.INSTANCE.internalCommandMap.forEach((plugin, commandPair) -> 
                HelpHelper.overrideTopic(commandPair.getLeft(), BrigadierWrapper.INSTANCE.permissionMap.get(commandPair.getLeft()), commandPair.getRight()));
+               */
             },1L);
+            
    }
    
     /**
@@ -39,6 +54,7 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
      */
     private void registerChannels() {
        getServer().getMessenger().registerOutgoingPluginChannel(this, "bgw:s2c_msg");
+       getServer().getMessenger().registerOutgoingPluginChannel(this, "bgw:s2c_clearex");
        getServer().getMessenger().registerIncomingPluginChannel(this, "bgw:c2s_cmdl", DynamicErrorProvider.LISTENER);
     }
 

@@ -34,6 +34,7 @@ public abstract class EntityTypeWrapper {
     
     protected abstract EntityType _getType(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
     
+    @SuppressWarnings("rawtypes")
     public abstract RequiredArgumentBuilder _buildRequired(String s);
     
 

@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.dynamic;
+package me.i509.brigwrapper;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.mojang.brigadier.StringReader;
 
-import me.i509.brigwrapper.BrigadierWrapperPlugin;
 import me.i509.util.SerializablePair;
 
 /**
@@ -62,10 +61,25 @@ public class DynamicErrorProvider {
         serializeAndSend(player, message);
     }
     
+    /**
+     * Sends a dynamic command message to a player. This will send to any player but only do something if the player has the dynamic command messages mod installed.
+     * This can be used for command errors or messages such as the outcome of a command or info of an entity you have selected.
+     * @param player The player to send the dynamic message to.
+     * @param supplier The supplier to get the message from.
+     */
     public static void sendDynamicMessage(@NotNull Player player, Supplier<String> supplier) {
         String message = ChatColor.stripColor(supplier.get()); // No color is allowed in the packet due to the message always being displayed as white text
         serializeAndSend(player, message);
     }
+    
+    /**
+     * Clear all the exceptions from dynamic command popup that the player sees.     This will do nothing if the Player does not have the ChatScreen or CommandBlock screen open.
+     * @param player The player to clear the exception popups from.
+     */
+    public static void clearExceptions(@NotNull Player player) {
+        player.sendPluginMessage(BrigadierWrapperPlugin.PACKAGE_INSTANCE, "bgw:s2c_clearex", new byte[0]); // Yes quite literally an empty message, if we need new exceptions just send another packet afterwards
+    }
+
     
     private static void serializeAndSend(Player player, String... msg) {
         List<String> list = new ArrayList<String>();
@@ -81,7 +95,7 @@ public class DynamicErrorProvider {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.write(gson.toJson(list).getBytes());
         
-        player.sendPluginMessage(BrigadierWrapperPlugin.TEMP_INSTANCE, "bgw:s2c_msg", out.toByteArray());
+        player.sendPluginMessage(BrigadierWrapperPlugin.PACKAGE_INSTANCE, "bgw:s2c_msg", out.toByteArray());
     }
     
 }

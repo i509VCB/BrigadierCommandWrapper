@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.bukkit.command.ConsoleCommandSender;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -11,9 +12,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import me.i509.brigwrapper.DispatcherInstance;
+import me.i509.brigwrapper.DynamicErrorProvider;
 import me.i509.brigwrapper.arguments.EntitySelectorWrapper;
-import me.i509.brigwrapper.dynamic.DynamicErrorProvider;
 import me.i509.brigwrapper.selectors.EntitySelectorType;
 import me.i509.brigwrapper.source.CommandSource;
 
@@ -21,8 +21,8 @@ public class DynamicErrorTest extends BrigadierCommand {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public LiteralCommandNode buildCommand() {
-        return DispatcherInstance.getInstance().dispatcher().register((LiteralArgumentBuilder) literal("packet_test")
+    public LiteralCommandNode register(CommandDispatcher dispatcher) {
+        return dispatcher.register((LiteralArgumentBuilder) literal("packet_test")
                 .then(required("player", EntitySelectorWrapper.selector(EntitySelectorType.ONE_PLAYER))
                         .executes(ctx -> {
                             return execute(ctx);
@@ -42,7 +42,7 @@ public class DynamicErrorTest extends BrigadierCommand {
     }
 
     @Override
-    public Optional<String> description() {
+    public Optional<String> fullDescription() {
 
         return Optional.empty();
     }
@@ -57,6 +57,11 @@ public class DynamicErrorTest extends BrigadierCommand {
     public Optional<String> usage() {
 
         return Optional.empty();
+    }
+
+    @Override
+    public boolean silentPerms() {
+        return false;
     }
 
 }

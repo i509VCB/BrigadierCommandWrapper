@@ -56,4 +56,9 @@ public interface CommandSource {
         return CommandSource_1_14_R1.fromObject(csource);
     }
     
+    public static Object getListener(CommandSender sender) {
+        
+        return CommandSource_1_14_R1.getListener(sender);
+    }
+    
 }

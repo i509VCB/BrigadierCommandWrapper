@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
@@ -19,25 +20,25 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import me.i509.brigwrapper.command.BrigadierCommand;
-import me.i509.brigwrapper.help.HelpHelper;
-import me.i509.brigwrapper.source.CommandSource;
-import me.i509.brigwrapper.util.CommandUtils;
+import me.i509.brigwrapper.command.BrigadierWrappedCommand;
 import me.i509.brigwrapper.util.Pair;
 
 /**
  * TODO
  * Implement MultiWorld plugin checks
  * ChatComponentArgumentWrapper (ChatComponents)
- * LootTableArgumentWrapper (Loot tables, return the LootTable enum or NamespacedKey)
+ * LootTableArgumentWrapper (Loot tables, return the LootTable enum or NamespacedKey of loot table)
  * Wrapper for ASK_SERVER suggestion provider.
- * Amend help topic menu getters in BrigadierCommand
+ * 
+ * 
+ * Finish BrigadierHelpTopic implementation.
+ * 
+ * 
  * GameProfileWrapper (Mojang GameProfiles, such as UUID or username)
  * 
  * Optionally add checking of sender into requires instead of at command runtime.
@@ -73,7 +74,7 @@ public final class BrigadierWrapper {
 
     static BrigadierWrapper INSTANCE;
     
-    public static BrigadierWrapper TEMP_INSTANCE = INSTANCE;
+    static BrigadierWrapper TEMP_INSTANCE = INSTANCE;
     
     @SuppressWarnings("rawtypes")
     private static CommandDispatcher dispatcher;
@@ -87,6 +88,8 @@ public final class BrigadierWrapper {
     Map<String, CommandPermission> permissionMap;
 
     private static final boolean fallbackDimension;
+
+    public static final String NO_PERMS_DEFAULT = ChatColor.RED + "You don't have permission to use this command.";
     
     private static Map<ClassCache, Field> fields;
 
@@ -111,7 +114,6 @@ public final class BrigadierWrapper {
      * @param permission the required permission for command to execute
      * @param command the command to execute
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void registerCommand(@NotNull String commandName, @NotNull Plugin plugin, @NotNull CommandPermission permission, @NotNull BrigadierCommand command) {
         
         Validate.notNull(commandName, "Cannot register null command name");
@@ -121,23 +123,20 @@ public final class BrigadierWrapper {
         
         INSTANCE.internalCommandMap.put(plugin.getName(), Pair.create(commandName, command));
         
-        LiteralCommandNode node = command.buildCommand();
+        //LiteralCommandNode node = command.buildCommand();
         
-        /*
-        if(plugin !=null) {
-            dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(plugin.getName() + ":" + commandName)
-                    .requires(csource -> CommandUtils.testSenderPerms(CommandSource.getSource(csource), permission))
-                        .redirect(node));
-        }*/
-         // TODO Aliases
+        BrigadierWrappedCommand currentCmd = new BrigadierWrappedCommand(commandName, new String[0], command, permission, plugin);
         
-        
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(commandName)
-                .requires(csource -> CommandUtils.testSenderPerms(CommandSource.getSource(csource), permission))
-                    .redirect(node));
+        System.out.println("Registering command: " + commandName);
+        getBukkitCommandMap().register(plugin.getName(), currentCmd);
         
         if(isServerLoaded()) {
-            Bukkit.getScheduler().runTaskLater(BrigadierWrapperPlugin.TEMP_INSTANCE, () -> HelpHelper.overrideTopic("/" + commandName, permission, command), 1L);
+            try {
+                DispatcherInstance.getInstance().syncCommands();
+            } catch (ReflectiveOperationException e) {
+                BrigadierWrapperPlugin.PACKAGE_INSTANCE.getLogger().severe("Failed to register command: " + commandName);
+                e.printStackTrace();
+            }
         }
     }
     
@@ -222,7 +221,11 @@ public final class BrigadierWrapper {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        return commandMap;
+    }
+    
+    public static SimpleCommandMap getBukkitCommandMap() {
+        return INSTANCE.getSimpleCommandMap();
     }
     
     public static boolean isServerLoaded() {

@@ -3,6 +3,9 @@ package me.i509.brigwrapper.impl.v1_14_R1;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_14_R1.command.VanillaCommandWrapper;
+
+import com.google.common.base.Joiner;
 
 import me.i509.brigwrapper.source.CommandSource;
 import net.minecraft.server.v1_14_R1.CommandListenerWrapper;
@@ -37,5 +40,9 @@ public class CommandSource_1_14_R1 implements CommandSource {
     @Override
     public Location getSenderPos() {
         return new Location(source.getWorld().getWorld(), source.getPosition().x, source.getPosition().y, source.getPosition().z);
+    }
+
+    public static Object getListener(CommandSender sender) {
+        return VanillaCommandWrapper.getListener(sender);
     }
 }

@@ -40,8 +40,8 @@ public class CommandUtils {
      * 
      * Verifies if this {@link CommandSender} is a Player, otherwise ends the command.
      * @param sender The command sender to test.
-     * @param failureMessage The failure message
-     * @throws CommandSyntaxException To end the command if the sender is not a player
+     * @param failureMessage The failure message.
+     * @throws CommandSyntaxException To end the command if the sender is not a player.
      */
     public static void notPlayerThenFail(@NotNull CommandSender sender, @NotNull String failureMessage) throws CommandSyntaxException {
         if(sender instanceof Player) {
@@ -55,8 +55,8 @@ public class CommandUtils {
      * 
      * Verifies if this {@link CommandSender} is a Player, otherwise ends the command.
      * @param sender The command sender to test.
-     * @param failureMessage The supplier for the failure message
-     * @throws CommandSyntaxException To end the command if the sender is not a player
+     * @param failureMessage The supplier for the failure message.
+     * @throws CommandSyntaxException To end the command if the sender is not a player.
      */
     public static void notPlayerThenFail(@NotNull CommandSender sender, @NotNull Supplier<String> failureMessage) throws CommandSyntaxException {
         if(sender instanceof Player) {
@@ -69,8 +69,8 @@ public class CommandUtils {
      * 
      * Verifies if this {@link CommandSender} is not the Console, otherwise ends the command.
      * @param sender The command sender to test.
-     * @param failureMessage The failure message
-     * @throws CommandSyntaxException To end the command if the sender is the console
+     * @param failureMessage The failure message.
+     * @throws CommandSyntaxException To end the command if the sender is the console.
      */
     public static void ifConsoleFail(@NotNull CommandSender sender, @NotNull String failureMessage) throws CommandSyntaxException {
         if(sender instanceof ConsoleCommandSender) {
