@@ -24,8 +24,6 @@ public class BrigadierHelpTopic extends HelpTopic {
         // TODO Auto-generated method stub
         return null;
     }
-    
-    
 
     @Override
     public boolean canSee(CommandSender sender) {

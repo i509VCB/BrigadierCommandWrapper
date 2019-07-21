@@ -15,7 +15,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import me.i509.brigwrapper.BrigadierWrapper;
-import me.i509.brigwrapper.DispatcherInstance;
 import me.i509.brigwrapper.arguments.DynamicStringArgument;
 import me.i509.brigwrapper.source.CommandSource;
 
@@ -59,12 +58,10 @@ public class PluginCommand extends BrigadierCommand {
         
         String pluginName = (String) ctx.getArgument("plugin", String.class);
         
-        Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName); // TODO add code to handle the Dynamic String arg
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         
         if(plugin==null) {
-            BrigadierWrapper.fail(() -> {
-                return "Plugin " + pluginName + " not found";
-            });
+            BrigadierWrapper.fail("Plugin " + pluginName + " not found");
         }
         // TODO fix mess
         List<BrigadierCommand> commandsRegistered = BrigadierWrapper.getAllCommands().get(plugin.getName()).asList().stream().filter(predicate -> {

@@ -1,22 +1,33 @@
 package me.i509.brigwrapper;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.leonhard.storage.Yaml;
 import me.i509.brigwrapper.CommandPermission.PermissionType;
 import me.i509.brigwrapper.command.BrigadierWrappedCommand;
 import me.i509.brigwrapper.command.Dimtest;
 import me.i509.brigwrapper.command.DynamicErrorTest;
 import me.i509.brigwrapper.command.PluginCommand;
+import me.i509.brigwrapper.config.ConfigWrapper;
 import me.i509.brigwrapper.help.BrigadierHelpTopic;
 
 public class BrigadierWrapperPlugin extends JavaPlugin {
     
     static BrigadierWrapperPlugin PACKAGE_INSTANCE;
+    private static boolean isMultiworld;
+    private Yaml yaml;
     
+    @SuppressWarnings("deprecation")
     public void onEnable() {
         
         PACKAGE_INSTANCE = this;
+        
+        checkForSoftDependancies();
+        
+        config();
         
         registerChannels();
         
@@ -41,14 +52,21 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
                 e.printStackTrace();
             }
             
+            BrigadierWrapper.setLoaded(); // Allow for on the fly registration now.
+            
             /**
             BrigadierWrapper.INSTANCE.internalCommandMap.forEach((plugin, commandPair) -> 
                HelpHelper.overrideTopic(commandPair.getLeft(), BrigadierWrapper.INSTANCE.permissionMap.get(commandPair.getLeft()), commandPair.getRight()));
                */
-            },1L);
+            },0L);
             
    }
    
+    public void onDisable() {
+           getServer().getMessenger().unregisterIncomingPluginChannel(this);
+           getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+       }
+
     /**
      * Register the plugin channels for future feature. Reccomended to just ignore these for now.
      */
@@ -58,13 +76,31 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
        getServer().getMessenger().registerIncomingPluginChannel(this, "bgw:c2s_cmdl", DynamicErrorProvider.LISTENER);
     }
 
-   public void onDisable() {
-       getServer().getMessenger().unregisterIncomingPluginChannel(this);
-       getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+    private void checkForSoftDependancies() {
+        // TODO MultiWorld stuff
+        
+    }
+
+    private void config() {
+        Yaml yaml = yamlConfig();
+        isMultiworld = ConfigWrapper.readValue(ConfigWrapper.useMultiWorldHandler, yamlConfig()); // Immutable
+        BrigadierWrapper.reloadConfig();
+    }
+
+    Yaml yamlConfig() {
+        if(yaml==null) {
+            yaml = new Yaml("config", getDataFolder().getPath());
+        }
+        
+        return yaml;
+    }
+
+    public static boolean isMultiWorld() {
+       // TODO common multiworld plugin checks
+       return isMultiworld;
    }
 
-   public static boolean isMultiWorld() {
-       // TODO common multiworld plugin checks
-       return false;
+   public static File getDataDir() {
+       return PACKAGE_INSTANCE.getDataFolder();
    }
 }

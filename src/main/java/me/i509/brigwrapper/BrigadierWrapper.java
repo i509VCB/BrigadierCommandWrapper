@@ -1,10 +1,7 @@
 package me.i509.brigwrapper;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -18,14 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.tree.CommandNode;
 
 import me.i509.brigwrapper.command.BrigadierCommand;
 import me.i509.brigwrapper.command.BrigadierWrappedCommand;
+import me.i509.brigwrapper.config.ConfigWrapper;
 import me.i509.brigwrapper.util.Pair;
 
 /**
@@ -75,9 +71,6 @@ public final class BrigadierWrapper {
     static BrigadierWrapper INSTANCE;
     
     static BrigadierWrapper TEMP_INSTANCE = INSTANCE;
-    
-    @SuppressWarnings("rawtypes")
-    private static CommandDispatcher dispatcher;
 
     private static boolean isLoaded;
     
@@ -87,11 +80,11 @@ public final class BrigadierWrapper {
     
     Map<String, CommandPermission> permissionMap;
 
-    private static final boolean fallbackDimension;
+    private static final boolean fallbackDimension; // Immutable from startup
+    
+    private static boolean debugLogging; // Can change
 
     public static final String NO_PERMS_DEFAULT = ChatColor.RED + "You don't have permission to use this command.";
-    
-    private static Map<ClassCache, Field> fields;
 
     protected BrigadierWrapper(Server server) throws ClassNotFoundException {
         if(Package.getPackage("com.mojang.brigadier") == null) {
@@ -100,9 +93,11 @@ public final class BrigadierWrapper {
         
         internalCommandMap = HashMultimap.create();
         
-        dispatcher = DispatcherInstance.getInstance().dispatcher(); //Create instance and store for local use
+        DispatcherInstance.getInstance();
         
         commandMap = getSimpleCommandMap();
+        
+        reloadConfig();
         
         Bukkit.getServer().getHelpMap();
     }
@@ -141,34 +136,7 @@ public final class BrigadierWrapper {
     }
     
     /**
-     * Unregisters a command from the CommandDispatcher. This is not reccomended for use unless nessecary and has been deprecated for such reason
-     * @param commandName
-     * @param force
-     */
-    @Deprecated
-    public static void unregisterCommand(@NotNull String commandName, boolean force) {
-        try {
-            Field children = getField(CommandNode.class, "children");
-            
-            @SuppressWarnings("unchecked")
-            Map<String, CommandNode<?>> c = (Map<String, CommandNode<?>>) children.get(dispatcher.getRoot());
-            
-            if(force) {
-                List<String> keysToRemove = new ArrayList<>();
-                c.keySet().stream().filter(s -> s.contains(":")).filter(s -> s.split(":")[1].equalsIgnoreCase(commandName)).forEach(keysToRemove::add);
-                for(String key : keysToRemove) {
-                    c.remove(key);
-                }
-            }
-            c.remove(commandName);
-                        
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    /**
-     * Uses reflection magic to unregister a command from bukkit's command map. This is not reccomended for use unless nessecary and has been deprecated for such reason
+     * Uses reflection magic to unregister a command from bukkit's command map. This is not recommended for use unless needed and has been deprecated for such reason
      * @param commandName
      */
     @Deprecated
@@ -194,34 +162,11 @@ public final class BrigadierWrapper {
     }
     
     /**
-     * Ends a command and returns the following message from the supplier as the failure reason. If done inside the execution of a command then the CommandSyntaxException will be caught by command executor
-     * @param supplier the supplier ran to get the failure reason of the command. Such as in the case of a language system or undoing actions before ending a command. 
-     * 
-     */
-    public static void fail(@NotNull Supplier<String> supplier) throws CommandSyntaxException {
-        throw new SimpleCommandExceptionType(new LiteralMessage(supplier.get())).create();
-    }
-    
-    /**
      * Gets an {@link ImmutableMultimap} with all commands registered by plugins.
      * @return
      */
     public static ImmutableMultimap<String, Pair<String,BrigadierCommand>> getAllCommands() {
         return ImmutableMultimap.copyOf(INSTANCE.internalCommandMap);
-    }
-    
-    public SimpleCommandMap getSimpleCommandMap() {
-        
-        if(commandMap !=null) {
-            return commandMap;
-        }
-        
-        try {
-            commandMap = (SimpleCommandMap) Bukkit.getServer().getClass().getMethod("getCommandMap").invoke(Bukkit.getServer());
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-        }
-        return commandMap;
     }
     
     public static SimpleCommandMap getBukkitCommandMap() {
@@ -240,24 +185,32 @@ public final class BrigadierWrapper {
         isLoaded = true;
     }
     
-    public static Field getField(Class<?> clazz, String name) {
-        ClassCache key = new ClassCache(clazz, name);
-        if(fields.containsKey(key)) {
-            return fields.get(key);
-        } else {
-            Field result = null;
-            try {
-                result = clazz.getDeclaredField(name);
-            } catch (NoSuchFieldException | SecurityException e) {
-                e.printStackTrace();
-            }
-            result.setAccessible(true);
-            fields.put(key, result);
-            return result;
-        }
-    }
-    
     public static boolean useFallbackDimensionArgument() {
         return fallbackDimension;
+    }
+    
+    public static boolean useDebugLogging() {
+        return debugLogging;
+    }
+
+    /**
+     * This only affects reloadable options like debug logging.
+     */
+    static void reloadConfig() {
+        debugLogging = ConfigWrapper.readValue(ConfigWrapper.debugLogging, BrigadierWrapperPlugin.PACKAGE_INSTANCE.yamlConfig());
+    }
+
+    public SimpleCommandMap getSimpleCommandMap() {
+        
+        if(commandMap !=null) {
+            return commandMap;
+        }
+        
+        try {
+            commandMap = (SimpleCommandMap) Bukkit.getServer().getClass().getMethod("getCommandMap").invoke(Bukkit.getServer());
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return commandMap;
     }
 }

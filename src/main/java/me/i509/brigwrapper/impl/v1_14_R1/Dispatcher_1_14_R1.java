@@ -33,6 +33,7 @@ public class Dispatcher_1_14_R1 extends DispatcherInstance {
         return MinecraftServer.getServer().commandDispatcher.a();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public ParseResults verifyDynamicOrError(String commandLine, Player p, String argName) {
         ParseResults<CommandListenerWrapper> parsed = MinecraftServer.getServer().commandDispatcher.a().parse(commandLine, (CommandListenerWrapper) p);
@@ -52,8 +53,6 @@ public class Dispatcher_1_14_R1 extends DispatcherInstance {
                 // TODO error, not a dynamic string
             }
             
-            
-            
             //suggestions.getList().stream().filter(sug -> sug.getText()).findFirst();
             
         });
@@ -61,7 +60,7 @@ public class Dispatcher_1_14_R1 extends DispatcherInstance {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public ParseResults parse(String dispatcher, CommandSender sender) {
         
@@ -99,7 +98,7 @@ public class Dispatcher_1_14_R1 extends DispatcherInstance {
             if (command instanceof VanillaCommandWrapper) {
                 LiteralCommandNode<CommandListenerWrapper> node = (LiteralCommandNode<CommandListenerWrapper>) ((VanillaCommandWrapper) command).vanillaCommand;
                 if (!node.getLiteral().equals(label)) {
-                    LiteralCommandNode<CommandListenerWrapper> clone = new LiteralCommandNode(label, node.getCommand(), node.getRequirement(), node.getRedirect(), node.getRedirectModifier(), node.isFork());
+                    LiteralCommandNode<CommandListenerWrapper> clone = new LiteralCommandNode<CommandListenerWrapper>(label, node.getCommand(), node.getRequirement(), node.getRedirect(), node.getRedirectModifier(), node.isFork());
 
                     for (CommandNode<CommandListenerWrapper> child : node.getChildren()) {
                         clone.addChild(child);

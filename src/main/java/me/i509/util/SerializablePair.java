@@ -3,7 +3,9 @@ package me.i509.util;
 import java.io.Serializable;
 
 public class SerializablePair<L extends Serializable, R extends Serializable> implements Serializable {
+    
     private static final long serialVersionUID = 3047432818854638985L;
+    
     private L left;
     private R right;
     
