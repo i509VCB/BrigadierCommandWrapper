@@ -1,6 +1,7 @@
 package me.i509.brigwrapper;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
@@ -61,11 +62,11 @@ public final class BrigadierWrapper {
             e.printStackTrace();
         }
         
-        if(Bukkit.getWorlds().isEmpty()) {
+        if(Bukkit.getWorlds().isEmpty()) { // This works cause we load before the world anyways
             isLoaded = false;
         }
         
-        fallbackDimension = BrigadierWrapperPlugin.isMultiWorld();
+        fallbackDimension = ConfigWrapper.readValue(ConfigWrapper.useMultiWorldHandler, BrigadierWrapperPlugin.PACKAGE_INSTANCE.yamlConfig());
     }
 
     static BrigadierWrapper INSTANCE;
@@ -110,8 +111,20 @@ public final class BrigadierWrapper {
      * @param command the command to execute
      */
     public static void registerCommand(@NotNull String commandName, @NotNull Plugin plugin, @NotNull CommandPermission permission, @NotNull BrigadierCommand command) {
+        registerCommand(commandName, plugin, new String[0], permission, command);
+    }
+    
+    /**
+     * Registers a command
+     * @param commandName the name of the command to register
+     * @param plugin the plugin to use for plugin:command alias
+     * @param permission the required permission for command to execute
+     * @param command the command to execute
+     */
+    public static void registerCommand(@NotNull String commandName, @NotNull Plugin plugin, @NotNull String[] aliases, @NotNull CommandPermission permission, @NotNull BrigadierCommand command) {
         
-        Validate.notNull(commandName, "Cannot register null command name");
+        Validate.notNull(commandName, "Cannot register null command name.");
+        Validate.notNull(aliases, "Please create an empty array instead of setting this to null");
         Validate.notNull(permission, "Cannot register null command permission. Use CommandPermission#ofEmpty instead");
         Validate.notNull(command, "Cannot register null command");
         Validate.notNull(plugin, "Must register command with a plugin");

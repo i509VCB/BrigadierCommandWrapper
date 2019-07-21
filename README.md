@@ -5,7 +5,14 @@ Documentation is work in progress...
 
 What does this do? This wrapper allows you to register commands created using Brigadier CommandDispatcher to use in bukkit with the rich tab completion system provided by brigadier on the client. This includes literal arguments, range limited integers and even some minecraft dependant arguments such as EntitySelectors and Locations. Also a packet system is in place to allow sending of custom command errors (Client side Fabric mod required).
 
-##TODO:
+## Features
+
+Allows for registration of commands without touching plugin.yml.
+Allows for operator only commands or commands that can only be executed by a command block for example.
+Multiversion as all the vanilla arguments have been abstracted.
+
+
+## TODO:
 
 Change registration so commands can tab complete as plugin:command.
 

@@ -17,8 +17,8 @@ import me.i509.brigwrapper.help.BrigadierHelpTopic;
 public class BrigadierWrapperPlugin extends JavaPlugin {
     
     static BrigadierWrapperPlugin PACKAGE_INSTANCE;
-    private static boolean isMultiworld;
     private Yaml yaml;
+    
     
     @SuppressWarnings("deprecation")
     public void onEnable() {
@@ -44,7 +44,6 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
         // TODO permissions logic
         
         getServer().getScheduler().scheduleSyncDelayedTask(this, () -> { // TODO This can error out, needs to be fixed due to NPEs
-            
             try {
                 DispatcherInstance.getInstance().syncCommands();
             } catch (ReflectiveOperationException e) {
@@ -53,11 +52,6 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
             }
             
             BrigadierWrapper.setLoaded(); // Allow for on the fly registration now.
-            
-            /**
-            BrigadierWrapper.INSTANCE.internalCommandMap.forEach((plugin, commandPair) -> 
-               HelpHelper.overrideTopic(commandPair.getLeft(), BrigadierWrapper.INSTANCE.permissionMap.get(commandPair.getLeft()), commandPair.getRight()));
-               */
             },0L);
             
    }
@@ -82,8 +76,6 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
     }
 
     private void config() {
-        Yaml yaml = yamlConfig();
-        isMultiworld = ConfigWrapper.readValue(ConfigWrapper.useMultiWorldHandler, yamlConfig()); // Immutable
         BrigadierWrapper.reloadConfig();
     }
 
@@ -95,9 +87,17 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
         return yaml;
     }
 
-    public static boolean isMultiWorld() {
-       // TODO common multiworld plugin checks
-       return isMultiworld;
+    public static void checkIfMultiWorld() {
+       
+        boolean flag = false; 
+        
+        if(PACKAGE_INSTANCE.getServer().getPluginManager().isPluginEnabled("Multiworld") || PACKAGE_INSTANCE.getServer().getPluginManager().isPluginEnabled("Multiverse")) {
+            flag = true;
+        } 
+        
+        if(!BrigadierWrapper.useFallbackDimensionArgument() && flag) {
+            // TODO warn in console about multiworld issue
+        }
    }
 
    public static File getDataDir() {

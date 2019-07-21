@@ -8,14 +8,14 @@ public class ConfigWrapper {
      * Represents the config setting of weather to use fallback mode on {@link WorldArgumentWrapper} or not
      */
     public static final ConfigEntry<Boolean> useMultiWorldHandler = (yaml) -> {
-        return yaml.getOrSetDefault("useMultiWorldHandler", false); // Handle missing cases where config does not exist yet.
+        return yaml.getOrSetDefault("useMultiWorldHandler", false); // Handle missing cases where config does not exist yet and default to false.
     };
     
     /**
      * Weather to use debug logging or not.
      */
     public static final ConfigEntry<Boolean> debugLogging = (yaml) -> {
-        return yaml.getOrSetDefault("debugLogging", false);
+        return yaml.getOrSetDefault("debugLogging", false); // Default to false.
     };
     
     /**
