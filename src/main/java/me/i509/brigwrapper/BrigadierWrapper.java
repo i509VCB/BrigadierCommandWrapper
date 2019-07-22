@@ -29,7 +29,8 @@ import me.i509.brigwrapper.util.Pair;
  * TODO
  * Implement MultiWorld plugin checks
  * ChatComponentArgumentWrapper (ChatComponents)
- * LootTableArgumentWrapper (Loot tables, return the LootTable enum or NamespacedKey of loot table)
+ * LootTableArgumentWrapper (Loot tables, return the LootTable enum or NamespacedKey of loot table) TODO WIP
+ * 
  * Wrapper for ASK_SERVER suggestion provider.
  * 
  * 
@@ -39,8 +40,6 @@ import me.i509.brigwrapper.util.Pair;
  * GameProfileWrapper (Mojang GameProfiles, such as UUID or username)
  * 
  * Optionally add checking of sender into requires instead of at command runtime.
- * 
- * Create DynamicLiteralArgument which only works if within dynamic string array, along with error support.
  * 
  * Possible:
  * MathOperationWrapper (if possible)

@@ -9,7 +9,10 @@ What does this do? This wrapper allows you to register commands created using Br
 
 Allows for registration of commands without touching plugin.yml.
 Allows for operator only commands or commands that can only be executed by a command block for example.
-Multiversion as all the vanilla arguments have been abstracted.
+Multi-version as all the vanilla arguments have been abstracted.
+Fancy tab completions with EntitySelectors.
+
+A WIP Packet system to provide custom command exceptions optionally to modded players.
 
 
 ## TODO:

@@ -40,7 +40,7 @@ public class BrigadierWrappedCommand extends Command implements PluginIdentifiab
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!testPermission(sender)) return true;
+        if (!testPermission(sender)) return true; // To terminate the command
         
         return DispatcherInstance.getInstance().execute(sender, commandLabel, getName(), args); // Will Always be true
     }
