@@ -10,7 +10,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import me.i509.brigwrapper.arguments.EntitySelectorWrapper;
-import me.i509.brigwrapper.selectors.EntitySelectorType;
 import net.minecraft.server.v1_14_R1.ArgumentEntity;
 import net.minecraft.server.v1_14_R1.Entity;
 
@@ -24,13 +23,13 @@ public class EntitySelectorWrapper_1_14_R1 extends EntitySelectorWrapper {
     protected ArgumentType<?> _getNMSType(EntitySelectorType selectorType) {
         switch(selectorType) {
         case MANY_ENTITIES:
-            return ArgumentEntity.multipleEntities(); // b
+            return ArgumentEntity.multipleEntities(); // b -- multipleEntities
         case MANY_PLAYERS:
-            return ArgumentEntity.d(); // d
+            return ArgumentEntity.d(); // d -- manyPlayers
         case ONE_ENTITY:
-            return ArgumentEntity.a(); // a
+            return ArgumentEntity.a(); // a -- oneEntity
         case ONE_PLAYER:
-            return ArgumentEntity.c(); // c
+            return ArgumentEntity.c(); // c -- onePlayer
         default:
             throw new IllegalArgumentException("Cannot create EntitySelectorWrapper with a null selector type");
         }

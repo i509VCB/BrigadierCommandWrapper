@@ -1,5 +1,7 @@
 package me.i509.brigwrapper;
 
+import org.bukkit.permissions.Permission;
+
 public class CommandPermission {
     private boolean isString = false;
     private boolean noPerm = false;

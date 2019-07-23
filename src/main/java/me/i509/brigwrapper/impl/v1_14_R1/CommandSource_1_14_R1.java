@@ -4,10 +4,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_14_R1.command.VanillaCommandWrapper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import me.i509.brigwrapper.source.CommandSource;
+import me.i509.brigwrapper.CommandSource;
 import net.minecraft.server.v1_14_R1.CommandListenerWrapper;
 import net.minecraft.server.v1_14_R1.WorldGenerator;
 
@@ -44,5 +47,15 @@ public class CommandSource_1_14_R1 implements CommandSource {
 
     public static Object getListener(CommandSender sender) {
         return VanillaCommandWrapper.getListener(sender);
+    }
+
+    @Override
+    public Player getPlayerSender() throws CommandSyntaxException {
+        return source.h().getBukkitEntity();
+    }
+
+    @Override
+    public Entity getEntitySender() throws CommandSyntaxException {
+        return source.g().getBukkitEntity();
     }
 }

@@ -16,6 +16,10 @@ repositories {
 	maven {
 		url "https://jitpack.io"
 	}
+	maven {
+        name 'papermc'
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
 }
 
 dependencies {
@@ -23,9 +27,25 @@ dependencies {
 	compile 'org.jetbrains:annotations:16.0.2'
 	compile 'com.github.tr7zw:Item-NBT-API:master-SNAPSHOT'
 	compileOnly "org.spigotmc:spigot-api:1.14.3-R0.1-SNAPSHOT"
+	compile "io.papermc:paperlib:1.0.2"
 	compile "com.github.JavaFactoryDev:LightningStorage:2.3.6"
 	compileOnly files('server/spigot-1.14.3.jar')
 	compileOnly files('server/spigot-1.13.2.jar')
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.2"
+    }
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+shadowJar {
+   relocate 'io.papermc.lib', 'me.i509.brigwrapper.paperlib'
 }
 
 tasks.withType(Jar) {

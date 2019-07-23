@@ -1,6 +1,8 @@
 package me.i509.brigwrapper;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +10,12 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,8 +28,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import me.i509.brigwrapper.command.BrigadierCommand;
 import me.i509.brigwrapper.command.BrigadierWrappedCommand;
-import me.i509.brigwrapper.config.ConfigWrapper;
-import me.i509.brigwrapper.util.Pair;
+import me.i509.util.Pair;
 
 /**
  * TODO
@@ -79,6 +84,8 @@ public final class BrigadierWrapper {
     Multimap<String, Pair<String, BrigadierCommand>> internalCommandMap;
     
     Map<String, CommandPermission> permissionMap;
+
+    private ConfirmationUtil confutil;
 
     private static final boolean fallbackDimension; // Immutable from startup
     
@@ -224,5 +231,121 @@ public final class BrigadierWrapper {
             e.printStackTrace();
         }
         return commandMap;
+    }
+
+    /**
+     * Verifies if this {@link CommandSender} is a player.
+     * @param sender The command sender to test.
+     * @return true if the sender is a player, otherwise false.
+     */
+    public static boolean isPlayer(@NotNull CommandSender sender) {
+        return sender instanceof Player;
+    }
+
+    /**
+     * Verifies if this {@link CommandSender} is not a {@link ConsoleCommandSender}.
+     * @param sender The command sender to test.
+     * @return false if the CommandSender is the console, otherwise true.
+     */
+    public static boolean notConsole(@NotNull CommandSender sender) {
+        return !(sender instanceof ConsoleCommandSender);
+    }
+
+    /**
+     * 
+     * Verifies if this {@link CommandSender} is a Player, otherwise ends the command.
+     * @param sender The command sender to test.
+     * @param failureMessage The failure message.
+     * @throws CommandSyntaxException To end the command if the sender is not a player.
+     */
+    public static void notPlayerThenFail(@NotNull CommandSender sender, @NotNull String failureMessage) throws CommandSyntaxException {
+        if(sender instanceof Player) {
+            return;
+        }
+        
+        fail(failureMessage);
+    }
+
+    /**
+     * 
+     * Verifies if this {@link CommandSender} is not the Console, otherwise ends the command.
+     * @param sender The command sender to test.
+     * @param failureMessage The failure message.
+     * @throws CommandSyntaxException To end the command if the sender is the console.
+     */
+    public static void ifConsoleFail(@NotNull CommandSender sender, @NotNull String failureMessage) throws CommandSyntaxException {
+        if(sender instanceof ConsoleCommandSender) {
+            fail(failureMessage);
+        }
+    }
+
+    /**
+     * Tests that this CommandSender has permission to.
+     * @param source The command source.
+     * @param perm The permission to test for.
+     * @return true if the sender has permission, otherwise false.
+     */
+    public static boolean testSenderPerms(@NotNull CommandSource source, @NotNull CommandPermission perm) {
+        if(perm.noPermissionNeeded()) {
+            return true;
+        }
+        
+        if(perm.isString()) {
+            if(source.getSender().hasPermission(perm.asString())) return true; else return false;
+        } else {
+            switch(perm.type()) {
+            case CONSOLE:
+                if(source.getSender() instanceof ConsoleCommandSender) return true; else return false;
+            case COMMAND_BLOCK:
+                if(source.getSender() instanceof BlockCommandSender) return true; else return false;
+            case OP:
+                if(source.getSender().isOp()) return true; else return false;
+            default:
+                return false;
+            }
+        }
+    }
+
+    public static boolean testSenderPerms(@NotNull CommandSender sender, @NotNull CommandPermission perm) {
+        if(perm.noPermissionNeeded()) {
+            return true;
+        }
+        
+        if(perm.isString()) {
+            if(sender.hasPermission(perm.asString())) return true; else return false;
+        } else {
+            switch(perm.type()) {
+            case CONSOLE:
+                if(sender instanceof ConsoleCommandSender) return true; else return false;
+            case COMMAND_BLOCK:
+                if(sender instanceof BlockCommandSender) return true; else return false;
+            case OP:
+                if(sender.isOp()) return true; else return false;
+            default:
+                return false;
+            }
+        }
+    }
+
+    public static String joinWithSpace(String commandLabel, String... strings) {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(commandLabel);
+        sb.append(" ");
+        
+        Iterator<String> i = Arrays.stream(strings).iterator();
+        
+        while (i.hasNext()) {
+            sb.append(i.next());
+            if(i.hasNext()) {
+                sb.append(" ");
+            }
+        }
+        
+        return sb.toString();
+    }
+
+    public static ConfirmationUtil getConfirm() {
+        return INSTANCE.confutil;
     }
 }

@@ -6,8 +6,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
 import de.tr7zw.changeme.nbtapi.NBTContainer;
+import me.i509.brigwrapper.MissingDependancyException;
 import me.i509.brigwrapper.impl.v1_14_R1.NBTTagWrapper_1_14_R1;
-import me.i509.brigwrapper.util.MissingDependancyException;
 
 public abstract class NBTTagWrapper {
     

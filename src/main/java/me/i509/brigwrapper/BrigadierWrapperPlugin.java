@@ -6,13 +6,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.leonhard.storage.Yaml;
+import io.papermc.lib.PaperLib;
 import me.i509.brigwrapper.CommandPermission.PermissionType;
 import me.i509.brigwrapper.command.BrigadierWrappedCommand;
 import me.i509.brigwrapper.command.Dimtest;
 import me.i509.brigwrapper.command.DynamicErrorTest;
 import me.i509.brigwrapper.command.PluginCommand;
-import me.i509.brigwrapper.config.ConfigWrapper;
-import me.i509.brigwrapper.help.BrigadierHelpTopic;
 
 public class BrigadierWrapperPlugin extends JavaPlugin {
     
@@ -24,6 +23,12 @@ public class BrigadierWrapperPlugin extends JavaPlugin {
     public void onEnable() {
         
         PACKAGE_INSTANCE = this;
+        
+        PaperLib.suggestPaper(this);
+        
+        if (!PaperLib.getEnvironment().isSpigot()) {
+            throw new NoSpigotNoRunException();
+        }
         
         checkForSoftDependancies();
         

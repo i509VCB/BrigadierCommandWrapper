@@ -1,13 +1,16 @@
-package me.i509.brigwrapper.source;
+package me.i509.brigwrapper;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import me.i509.brigwrapper.impl.v1_14_R1.CommandSource_1_14_R1;
 
@@ -35,6 +38,20 @@ public interface CommandSource {
      */
     @Nullable
     public Location getSenderPos();
+    
+    /**
+     * Gets the player who sent this command. Otherwise ends the command.
+     * @return The player who send this command.
+     * @throws CommandSyntaxException if the sender is not a player and ends the command.
+     */
+    public Player getPlayerSender() throws CommandSyntaxException;
+    
+    /**
+     * Gets the entity that sent this command. Otherwise ends the command.
+     * @return The entity that send this command.
+     * @throws CommandSyntaxException if the sender is not an entity and ends the command.
+     */
+    public Entity getEntitySender() throws CommandSyntaxException;
 
     /**
      * Gets the wrapped CommandSource from the command context

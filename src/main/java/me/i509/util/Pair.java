@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.util;
+package me.i509.util;
 
 public class Pair<L, R> {
     
@@ -21,5 +21,8 @@ public class Pair<L, R> {
     public R getRight() {
         return right;
     }
-
+    
+    public Pair<R,L> swap() {
+        return new Pair<R, L> (this.right,this.left);
+    }
 }

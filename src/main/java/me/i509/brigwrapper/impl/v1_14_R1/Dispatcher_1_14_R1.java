@@ -27,6 +27,7 @@ import net.minecraft.server.v1_14_R1.EntityPlayer;
 import net.minecraft.server.v1_14_R1.MinecraftServer;
 
 public class Dispatcher_1_14_R1 extends DispatcherInstance {
+    
     @SuppressWarnings({ "deprecation" })
     @Override
     public CommandDispatcher<?> dispatcher() {
@@ -62,19 +63,19 @@ public class Dispatcher_1_14_R1 extends DispatcherInstance {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public ParseResults parse(String dispatcher, CommandSender sender) {
+    public ParseResults parse(String dispatcher, CommandSender sender) { // Copy the Vanilla command logic as we use that.
         
-        CommandListenerWrapper iwrapper = VanillaCommandWrapper.getListener(sender);
+        CommandListenerWrapper clw = VanillaCommandWrapper.getListener(sender);
         
-        ParseResults parse = DispatcherInstance.getInstance().dispatcher().parse(dispatcher, iwrapper);
+        ParseResults parse = DispatcherInstance.getInstance().dispatcher().parse(dispatcher, clw);
         
         return parse;
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String name, String[] args) {
-        CommandListenerWrapper iwrapper = VanillaCommandWrapper.getListener(sender);
-        MinecraftServer.getServer().commandDispatcher.a(iwrapper, BrigadierWrappedCommand.toDispatcher(args, name), BrigadierWrappedCommand.toDispatcher(args, commandLabel)); // Execute
+    public boolean execute(CommandSender sender, String commandLabel, String name, String[] args) { // Copy the Vanilla command logic as we use that.
+        CommandListenerWrapper clw = VanillaCommandWrapper.getListener(sender);
+        MinecraftServer.getServer().commandDispatcher.a(clw, BrigadierWrappedCommand.toDispatcher(args, name), BrigadierWrappedCommand.toDispatcher(args, commandLabel)); // Execute
         return true;
     }
     

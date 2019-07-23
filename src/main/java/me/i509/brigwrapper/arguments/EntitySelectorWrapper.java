@@ -11,7 +11,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import me.i509.brigwrapper.impl.v1_14_R1.EntitySelectorWrapper_1_14_R1;
-import me.i509.brigwrapper.selectors.EntitySelectorType;
 
 // TODO version dependant selectors
 public abstract class EntitySelectorWrapper {
@@ -90,4 +89,11 @@ public abstract class EntitySelectorWrapper {
     protected abstract List<Player> _getPlayers(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
 
     protected abstract Player _getPlayer(CommandContext<?> cmdCtx, String str) throws CommandSyntaxException;
+    
+    public enum EntitySelectorType {
+        /**Multiple entities, can include players*/MANY_ENTITIES, 
+        /**Multiple players*/MANY_PLAYERS, 
+        /**One entity only, can be a player*/ONE_ENTITY, 
+        /**One player only*/ONE_PLAYER
+    }
 }

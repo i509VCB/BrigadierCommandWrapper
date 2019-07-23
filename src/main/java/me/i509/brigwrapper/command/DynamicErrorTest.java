@@ -12,10 +12,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import me.i509.brigwrapper.CommandSource;
 import me.i509.brigwrapper.DynamicErrorProvider;
 import me.i509.brigwrapper.arguments.EntitySelectorWrapper;
-import me.i509.brigwrapper.selectors.EntitySelectorType;
-import me.i509.brigwrapper.source.CommandSource;
+import me.i509.brigwrapper.arguments.EntitySelectorWrapper.EntitySelectorType;
 
 public class DynamicErrorTest extends BrigadierCommand {
 

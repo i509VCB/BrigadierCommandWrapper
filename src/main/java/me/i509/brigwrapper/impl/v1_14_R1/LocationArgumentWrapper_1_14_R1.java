@@ -7,9 +7,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import me.i509.brigwrapper.CommandSource;
 import me.i509.brigwrapper.arguments.LocationArgumentWrapper;
-import me.i509.brigwrapper.selectors.LocationType;
-import me.i509.brigwrapper.source.CommandSource;
 import net.minecraft.server.v1_14_R1.ArgumentPosition;
 import net.minecraft.server.v1_14_R1.ArgumentVec2;
 import net.minecraft.server.v1_14_R1.ArgumentVec2I;

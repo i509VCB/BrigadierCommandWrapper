@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.util;
+package me.i509.brigwrapper;
 
 public class MissingDependancyException extends RuntimeException {
     public MissingDependancyException(String string) {

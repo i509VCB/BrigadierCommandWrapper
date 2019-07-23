@@ -9,9 +9,9 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import me.i509.brigwrapper.BrigadierWrapper;
 import me.i509.brigwrapper.CommandPermission;
-import me.i509.brigwrapper.source.CommandSource;
-import me.i509.brigwrapper.util.CommandUtils;
+import me.i509.brigwrapper.CommandSource;
 
 public class DynamicStringArgumentSource {
     @FunctionalInterface
@@ -53,7 +53,7 @@ public class DynamicStringArgumentSource {
     public RequiredArgumentBuilder buildWithPermission(String argumentName, CommandPermission perm) {
         return RequiredArgumentBuilder.argument(argumentName, StringArgumentType.word())
                 .suggests((SuggestionProvider<Object>) this.suggestions())
-                    .requires(csource -> CommandUtils.testSenderPerms(CommandSource.getSource(csource), perm));
+                    .requires(csource -> BrigadierWrapper.testSenderPerms(CommandSource.getSource(csource), perm));
     }
 
     private CompletableFuture<Suggestions> getSuggestionsBuilder(SuggestionsBuilder builder, String[] array) {

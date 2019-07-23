@@ -3,11 +3,11 @@ package me.i509.brigwrapper.arguments;
 import org.bukkit.Location;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import me.i509.brigwrapper.impl.v1_14_R1.LocationArgumentWrapper_1_14_R1;
-import me.i509.brigwrapper.selectors.LocationType;
 
 public abstract class LocationArgumentWrapper {
     
@@ -57,4 +57,11 @@ public abstract class LocationArgumentWrapper {
     protected abstract Location _getLocationBlockPos(CommandContext cmdCtx, String str) throws CommandSyntaxException;
     
     protected abstract Location _getLocationBlockPos2D(CommandContext cmdCtx, String str) throws CommandSyntaxException;
+    
+    public enum LocationType {
+        /**Vec3ArgumentType*/PRECISE,
+        /**BlockPositionArgumentType*/BLOCK, 
+        /**Vec2ArgumentType*/PRECISE_2D, 
+        /**Vec2IArgumentType*/BLOCK_2D;
+    }
 }

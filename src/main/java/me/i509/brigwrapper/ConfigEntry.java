@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.config;
+package me.i509.brigwrapper;
 
 import java.util.Map;
 

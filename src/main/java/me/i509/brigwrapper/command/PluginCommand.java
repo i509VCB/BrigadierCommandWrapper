@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -15,8 +16,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import me.i509.brigwrapper.BrigadierWrapper;
+import me.i509.brigwrapper.CommandSource;
 import me.i509.brigwrapper.arguments.DynamicStringArgument;
-import me.i509.brigwrapper.source.CommandSource;
 
 public class PluginCommand extends BrigadierCommand {
     
@@ -70,7 +71,9 @@ public class PluginCommand extends BrigadierCommand {
             }
             return false;
         }).map(pair -> pair.getRight()).collect(Collectors.toList());
-                
+            
+        
+        
         
         if(commandsRegistered.isEmpty()) {
             // TODO none registered
@@ -92,9 +95,10 @@ public class PluginCommand extends BrigadierCommand {
     }
 
     @SuppressWarnings("rawtypes")
-    private int execute(CommandContext ctx) {
+    private int execute(CommandContext ctx) throws CommandSyntaxException {
         CommandSource source = CommandSource.getSource(ctx);
         
+        Player player = source.getPlayerSender();
         
         return 0;
     }

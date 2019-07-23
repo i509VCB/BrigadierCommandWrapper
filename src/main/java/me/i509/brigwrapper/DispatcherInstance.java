@@ -24,15 +24,16 @@ public abstract class DispatcherInstance {
         return INSTANCE;
     }
     
+    
     /**
-     * Gets the {@link CommandDispatcher} from this instance.
+     * Gets the {@link CommandDispatcher} from this instance. 
+     * This should not be used by plugins for registering commands. 
+     * <p>Instead use {@link BrigadierWrapper#registerCommand(String, Plugin, String[], CommandPermission, BrigadierCommand)} to register commands.
      * @return the {@link CommandDispatcher}
-     */
+     *
+     **/
     @SuppressWarnings("rawtypes")
     public abstract CommandDispatcher dispatcher();
-
-    
-    
     
     /**
      * Future feature not implemented yet. May not survive final release

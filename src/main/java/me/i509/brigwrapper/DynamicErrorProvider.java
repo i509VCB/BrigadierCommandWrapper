@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -15,6 +16,9 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.mojang.brigadier.StringReader;
 
+import me.i509.brigwrapper.event.CustomExceptionClearEvent;
+import me.i509.brigwrapper.event.CustomExceptionSendEvent;
+import me.i509.brigwrapper.event.StringReaderRecieveEvent;
 import me.i509.util.SerializablePair;
 
 /**
@@ -27,7 +31,6 @@ public class DynamicErrorProvider {
      * The {@link PluginMessageListener} fired when the client sends a StringReader to the server to parse for custom errors.
      */
     public static final PluginMessageListener LISTENER = (channel, player, message) -> {
-        System.out.println("Received packet");
         
         if(!channel.equals("bgw:c2s_cmdl")) {
             return;
@@ -42,11 +45,8 @@ public class DynamicErrorProvider {
         
         StringReader stringreader = new StringReader(serialstringreader.getLeft());
         stringreader.setCursor((int) serialstringreader.getRight().intValue());
-        
-        
-        System.out.println(stringreader.canRead());
-        
-        System.out.println(stringreader.getString());
+        StringReaderRecieveEvent evt = new StringReaderRecieveEvent(stringreader, player);
+        Bukkit.getPluginManager().callEvent(evt);
 
     };
     
@@ -77,6 +77,8 @@ public class DynamicErrorProvider {
      * @param player The player to clear the exception popups from.
      */
     public static void clearExceptions(@NotNull Player player) {
+        CustomExceptionClearEvent evt = new CustomExceptionClearEvent(player);
+        Bukkit.getPluginManager().callEvent(evt);
         player.sendPluginMessage(BrigadierWrapperPlugin.PACKAGE_INSTANCE, "bgw:s2c_clearex", new byte[0]); // Yes quite literally an empty message, if we need new exceptions just send another packet afterwards
     }
 
@@ -89,6 +91,9 @@ public class DynamicErrorProvider {
                 list.add(ms);
             }
         }
+        
+        CustomExceptionSendEvent evt = new CustomExceptionSendEvent(list, player);
+        Bukkit.getPluginManager().callEvent(evt);
         
         Gson gson = new Gson();
 

@@ -1,4 +1,4 @@
-package me.i509.brigwrapper.help;
+package me.i509.brigwrapper;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.help.HelpTopic;
